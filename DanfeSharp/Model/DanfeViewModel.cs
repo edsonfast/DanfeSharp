@@ -249,7 +249,7 @@ namespace DanfeSharp.Model
                 // Verifica se o valor aproximado dos tributos já consta nas informações complementares
                 String rgValorAproximadoTributos = @"(vlr|val(or)?)(\s*)(aproximado|aprox(\.?))(\s*)(de|dos)?(\s*)(tributos)";
 
-                Boolean isValorImpresso = String.IsNullOrWhiteSpace(InformacoesComplementares) ? false : Regex.IsMatch(InformacoesComplementares, rgValorAproximadoTributos, RegexOptions.IgnoreCase);
+                Boolean isValorImpresso = String.IsNullOrWhiteSpace(InformacoesComplementares) ? false : Regex.IsMatch(InformacoesComplementares, rgValorAproximadoTributos, RegexOptions.IgnoreCase) || InformacoesComplementares.Contains("Trib aprox");
 
                 if (ValorAproximadoTributos.HasValue && !isValorImpresso)
                 {
