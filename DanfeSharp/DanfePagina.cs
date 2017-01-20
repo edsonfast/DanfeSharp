@@ -116,7 +116,7 @@ namespace DanfeSharp
 
             _Composer.SetFont(_Danfe.Font, 6);
             bComp.SafeBegin(rect, XAlignmentEnum.Right, YAlignmentEnum.Top);
-            bComp.ShowText("Gerado com DanfeSharp");
+            bComp.ShowText(string.Format("Gerado em {0} com Lenus UX | www.sysvalley.com.br", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")));
             bComp.End(); 
         }
 

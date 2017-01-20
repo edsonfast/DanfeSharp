@@ -175,6 +175,7 @@ namespace DanfeSharp
                 throw new ArgumentNullException("logoPath");
             }
 
+            logoPath = logoPath.ToLower();
             if (logoPath.EndsWith(".jpg"))
             {
                 _Logo = GetJpegLogo(logoPath);

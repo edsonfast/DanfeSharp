@@ -48,17 +48,34 @@ namespace DanfeSharp.Model
        
         internal static DanfeViewModel CreateFromXmlString(String xml)
         {
-            ProcNFe nfe = null;
-            XmlSerializer serializer = new XmlSerializer(typeof(ProcNFe));
+            bool xml_processado = false;
+            // validar se é um xml processado ou não
+            if (xml.ToLower().Contains("<nfeproc")) {
+                xml_processado = true;
+            }
+
+            ProcNFe procNfe = null;
+            XmlSerializer serializer_procNFe = new XmlSerializer(typeof(ProcNFe));
+
+            NFe nfe = null;
+            XmlSerializer serializer_nfe = new XmlSerializer(typeof(NFe));
 
             try
             {
                 using (TextReader reader = new StringReader(xml))
                 {
-                    nfe = (ProcNFe)serializer.Deserialize(reader);
+                    if (xml_processado) {
+                        procNfe = (ProcNFe)serializer_procNFe.Deserialize(reader);
+                    } else {
+                        nfe = (NFe)serializer_nfe.Deserialize(reader);
+                    }
                 }
 
-                return CreateFromXml(nfe);
+                if (xml_processado) {
+                    return CreateFromXml(procNfe);
+                } else {
+                    return CreateFromXMLNFe(nfe);
+                }
             }                        
             catch (System.InvalidOperationException e)
             {
@@ -78,20 +95,38 @@ namespace DanfeSharp.Model
                 throw new FileNotFoundException("O arquivo Xml não foi encontrado.", path);
             }
 
-            ProcNFe nfe = null;
-            XmlSerializer serializer = new XmlSerializer(typeof(ProcNFe));
+            bool xml_processado = false;
+            // validar se é um xml processado ou não
+            if (File.ReadAllText(path).ToLower().Contains("<nfeproc")) {
+                xml_processado = true;
+            }
+
+            ProcNFe procNfe = null;
+            XmlSerializer serializer_procNFe = new XmlSerializer(typeof(ProcNFe));
+
+            NFe nfe = null;
+            XmlSerializer serializer_nfe = new XmlSerializer(typeof(NFe));
 
             try
             {
                 using (StreamReader reader = new StreamReader(path, true))
                 {
-                    nfe = (ProcNFe)serializer.Deserialize(reader);
+                    if (xml_processado) {
+                        procNfe = (ProcNFe)serializer_procNFe.Deserialize(reader);
+                    } else {
+                        nfe = (NFe)serializer_nfe.Deserialize(reader);
+                    }
                 }
 
-                return CreateFromXml(nfe);
+                if (xml_processado) {
+                    return CreateFromXml(procNfe);
+                } else {
+                    return CreateFromXMLNFe(nfe);
+                }
             }
             catch (System.InvalidOperationException e)
             {
+                
                 if(e.InnerException is XmlException)
                 {
                     XmlException ex = (XmlException)e.InnerException;
@@ -130,6 +165,156 @@ namespace DanfeSharp.Model
 
         }
 
+        public static DanfeViewModel CreateFromXMLNFe(NFe NFe) {
+            DanfeViewModel model = new DanfeViewModel();
+
+            var nfe = NFe;
+            var infNfe = nfe.infNFe;
+            var ide = infNfe.ide;
+
+            if (ide.mod != 55) {
+                throw new Exception("Somente o mod==55 está implementado.");
+            }
+
+            if (ide.tpEmis != FormaEmissao.Normal) {
+                throw new Exception("Somente o tpEmis==1 está implementado.");
+            }
+
+
+
+            model.TipoAmbiente = (int)ide.tpAmb;
+            model.NumeroNF = ide.nNF;
+            model.Serie = ide.serie;
+            model.NaturezaOperacao = ide.natOp;
+            model.ChaveAcesso = NFe.infNFe.Id.Substring(3);
+            model.TipoNF = (int)ide.tpNF;
+
+            model.Emitente = CreateEmpresaFrom(infNfe.emit);
+            model.Destinatario = CreateEmpresaFrom(infNfe.dest);
+
+            foreach (var det in infNfe.det) {
+                ProdutoViewModel produto = new ProdutoViewModel();
+                produto.Codigo = det.prod.cProd;
+                produto.Descricao = det.prod.xProd;
+                produto.Ncm = det.prod.NCM;
+                produto.cEAN = det.prod.cEAN;
+                produto.Cfop = det.prod.CFOP;
+                produto.Unidade = det.prod.uCom;
+                produto.Quantidade = det.prod.qCom;
+                produto.ValorUnitario = det.prod.vUnCom;
+                produto.ValorTotal = det.prod.vProd;
+                produto.InformacoesAdicionais = det.infAdProd;
+
+                var imposto = det.imposto;
+
+                if (imposto != null) {
+                    if (imposto.ICMS != null) {
+                        var icms = imposto.ICMS.ICMS;
+
+                        if (icms != null) {
+                            produto.ValorIcms = icms.vICMS;
+                            produto.BaseIcms = icms.vBC;
+                            produto.AliquotaIcms = icms.pICMS;
+                            produto.OCst = icms.orig + icms.CST + icms.CSOSN;
+                        }
+                    }
+
+                    if (imposto.IPI != null) {
+                        var ipi = imposto.IPI.IPITrib;
+
+                        if (ipi != null) {
+                            produto.ValorIpi = ipi.vIPI;
+                            produto.AliquotaIpi = ipi.pIPI;
+                        }
+                    }
+                }
+
+                model.Produtos.Add(produto);
+            }
+
+            if (infNfe.cobr != null) {
+                foreach (var item in infNfe.cobr.dup) {
+                    DuplicataViewModel duplicata = new DuplicataViewModel();
+                    duplicata.Numero = item.nDup;
+                    duplicata.Valor = item.vDup;
+                    duplicata.Vecimento = item.dVenc;
+
+                    model.Duplicatas.Add(duplicata);
+                }
+            }
+
+
+            var icmsTotal = infNfe.total.ICMSTot;
+
+            model.ValorAproximadoTributos = icmsTotal.vTotTrib;
+            model.BaseCalculoIcms = icmsTotal.vBC;
+            model.ValorIcms = icmsTotal.vICMS;
+            model.BaseCalculoIcmsSt = icmsTotal.vBCST;
+            model.ValorIcmsSt = icmsTotal.vST;
+            model.ValorTotalProdutos = icmsTotal.vProd;
+            model.ValorFrete = icmsTotal.vFrete;
+            model.ValorSeguro = icmsTotal.vSeg;
+            model.Desconto = icmsTotal.vDesc;
+            model.ValorIpi = icmsTotal.vIPI;
+            model.OutrasDespesas = icmsTotal.vOutro;
+            model.ValorTotalNota = icmsTotal.vNF;
+
+            var issqnTotal = infNfe.total.ISSQNtot;
+
+            if (issqnTotal != null) {
+                model.BaseIssqn = issqnTotal.vBC;
+                model.ValorTotalServicos = issqnTotal.vServ;
+                model.ValorIssqn = issqnTotal.vISS;
+            }
+
+            var transp = infNfe.transp;
+            var transportadora = transp.transporta;
+            var transportadoraModel = model.Transportadora;
+
+            transportadoraModel.ModalidadeFrete = (int)transp.modFrete;
+
+            if (transp.veicTransp != null) {
+                transportadoraModel.VeiculoUf = transp.veicTransp.UF;
+                transportadoraModel.CodigoAntt = transp.veicTransp.RNTC;
+                transportadoraModel.Placa = transp.veicTransp.placa;
+            }
+
+            if (transportadora != null) {
+                transportadoraModel.Nome = transportadora.xNome;
+                transportadoraModel.EnderecoUf = transportadora.UF;
+                transportadoraModel.CnpjCpf = !String.IsNullOrWhiteSpace(transportadora.CNPJ) ? transportadora.CNPJ : transportadora.CPF;
+                transportadoraModel.EnderecoLogadrouro = transportadora.xEnder;
+                transportadoraModel.Municipio = transportadora.xMun;
+                transportadoraModel.Ie = transportadora.IE;
+            }
+
+
+            var vol = transp.vol.FirstOrDefault();
+
+            if (vol != null) {
+                transportadoraModel.QuantidadeVolumes = vol.qVol;
+                transportadoraModel.Especie = vol.esp;
+                transportadoraModel.Marca = vol.marca;
+                transportadoraModel.Numeracao = vol.nVol;
+                transportadoraModel.PesoBruto = vol.pesoB;
+                transportadoraModel.PesoLiquido = vol.pesoL;
+            }
+
+
+
+            var infAdic = infNfe.infAdic;
+            if (infAdic != null) {
+                model.InformacoesComplementares = NFe.infNFe.infAdic.infCpl;
+                model.InformacoesAdicionaisFisco = NFe.infNFe.infAdic.infAdFisco;
+            }
+
+            model.ProtocoloAutorizacao = string.Empty;
+
+            ExtrairDatas(model, infNfe);
+
+            return model;
+        }
+
         public static DanfeViewModel CreateFromXml(ProcNFe procNfe)
         {
             DanfeViewModel model = new DanfeViewModel();
@@ -166,6 +351,7 @@ namespace DanfeSharp.Model
                 produto.Codigo = det.prod.cProd;
                 produto.Descricao = det.prod.xProd;
                 produto.Ncm = det.prod.NCM;
+                produto.cEAN = det.prod.cEAN;
                 produto.Cfop = det.prod.CFOP;
                 produto.Unidade = det.prod.uCom;
                 produto.Quantidade = det.prod.qCom;
