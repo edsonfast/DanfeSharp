@@ -1,84 +1,57 @@
-﻿using org.pdfclown.documents.contents.composition;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DanfeSharp.Modelo;
 
-namespace DanfeSharp
+namespace DanfeSharp.Blocos
 {
-    public class BlocoCalculoImposto : BlocoDanfe
+    class BlocoCalculoImposto : BlocoBase
     {
-        #region CamposLinhas1
-
-        public DanfeCampo BaseCalculoIcms { get; private set; }
-        public DanfeCampo ValorIcms { get; private set; }
-        public DanfeCampo BaseCalculoIcmsSt { get; private set; }
-        public DanfeCampo ValorCalculoIcmsSt { get; private set; }
-        public DanfeCampo ValorProdutos { get; private set; }
-
-        #endregion
-
-
-        #region CamposLinhas2
-
-        public DanfeCampo ValorFrete { get; private set; }
-        public DanfeCampo ValorSeguro { get; private set; }
-        public DanfeCampo Desconto { get; private set; }
-        public DanfeCampo OutrasDespesas { get; private set; }
-        public DanfeCampo ValorIpi { get; private set; }
-        public DanfeCampo ValorNota { get; private set; }
-
-        #endregion
-
-        
-        public BlocoCalculoImposto(DanfeDocumento danfeMaker)
-            : base(danfeMaker)
+        public BlocoCalculoImposto(DanfeViewModel viewModel, Estilo estilo) : base(viewModel, estilo)
         {
-            Size = new SizeF(Danfe.InnerRect.Width, danfeMaker.CabecalhoBlocoAltura + 2*danfeMaker.CampoAltura + DanfeDocumento.LineWidth);
-            Initialize();
+            var m = ViewModel.CalculoImposto;
 
-        }
+            var l = AdicionarLinhaCampos()
+            .ComCampoNumerico("BASE DE CÁLC. DO ICMS", m.BaseCalculoIcms)
+            .ComCampoNumerico("VALOR DO ICMS", m.ValorIcms)
+            .ComCampoNumerico("BASE DE CÁLC. ICMS S.T.", m.BaseCalculoIcmsSt)
+            .ComCampoNumerico("VALOR DO ICMS SUBST.", m.ValorIcmsSt)
+            .ComCampoNumerico("V. IMP. IMPORTAÇÃO", m.ValorII);
 
-        protected override DanfeCampo CriarCampo(string cabecalho, string corpo, XAlignmentEnum corpoAlinhamentoX = XAlignmentEnum.Right)
-        {
-            return base.CriarCampo(cabecalho, corpo, corpoAlinhamentoX);
-        }
-
-        protected override void CriarCampos()
-        {
-            BaseCalculoIcms = CriarCampo("BASE DE CÁLCULO DO ICMS", Danfe.Model.BaseCalculoIcms.Formatar());
-            ValorIcms = CriarCampo("VALOR DO ICMS", Danfe.Model.ValorIcms.Formatar());
-            BaseCalculoIcmsSt = CriarCampo("BASE DE CÁLC. ICMS S.T.", Danfe.Model.BaseCalculoIcmsSt.Formatar());
-            ValorCalculoIcmsSt = CriarCampo("VALOR DO ICMS SUBSTITUIÇÃO", Danfe.Model.ValorIcmsSt.Formatar());
-            ValorProdutos = CriarCampo("VALOR TOTAL DOS PRODUTOS", Danfe.Model.ValorTotalProdutos.Formatar());
-
-
-            ValorFrete = CriarCampo("Valor do Frete", Danfe.Model.ValorFrete.Formatar());
-            ValorSeguro = CriarCampo("VALOR DO SEGURO", Danfe.Model.ValorSeguro.Formatar());
-            Desconto = CriarCampo("Desconto", Danfe.Model.Desconto.Formatar());
-            OutrasDespesas = CriarCampo("OUTRAS DESPESAS", Danfe.Model.OutrasDespesas.Formatar());
-            ValorIpi = CriarCampo("VALOR DO IPI", Danfe.Model.ValorIpi.Formatar());
-            ValorNota = CriarCampo("VALOR TOTAL DA NOTA", Danfe.Model.ValorTotalNota.Formatar(), RectangleF.Empty, XAlignmentEnum.Right, 10, true);
-        }
-
-        protected override void PosicionarCampos()
-        {
-            RectangleF linha = new RectangleF(InternalRectangle.Left, InternalRectangle.Top, InternalRectangle.Width, Danfe.CampoAltura);
-            PosicionarLadoLado(linha, BaseCalculoIcms, ValorIcms, BaseCalculoIcmsSt, ValorCalculoIcmsSt, ValorProdutos);
-
-            linha.Y = linha.Bottom;
-            PosicionarLadoLado(linha, new float[] { 0, 0, 0, 0, 0, ValorProdutos.Retangulo.Width}, ValorFrete, ValorSeguro, Desconto, OutrasDespesas, ValorIpi, ValorNota);
-        }       
-                  
-
-        public override string Cabecalho
-        {
-            get
+            if (ViewModel.ExibirIcmsInterestadual)
             {
-                return "CÁLCULO DO IMPOSTO";
+                l.ComCampoNumerico("V. ICMS UF REMET.", m.vICMSUFRemet)
+                 .ComCampoNumerico("VALOR DO FCP", m.vFCPUFDest);
             }
+
+            if (ViewModel.ExibirPisConfins)
+            {
+                l.ComCampoNumerico("VALOR DO PIS", m.ValorPis);
+            }
+
+            l.ComCampoNumerico("V. TOTAL PRODUTOS", m.ValorTotalProdutos)
+           .ComLargurasIguais();
+
+            l = AdicionarLinhaCampos()
+            .ComCampoNumerico("Valor do Frete", m.ValorFrete)
+            .ComCampoNumerico("Valor do Seguro", m.ValorSeguro)
+            .ComCampoNumerico("Desconto", m.Desconto)
+            .ComCampoNumerico("Outras Despesas", m.OutrasDespesas)
+            .ComCampoNumerico("Valor Ipi", m.ValorIpi);
+
+            if (ViewModel.ExibirIcmsInterestadual)
+            {
+                l.ComCampoNumerico("V. ICMS UF DEST.", m.vICMSUFDest)
+                .ComCampoNumerico("V. TOT. TRIB.", m.ValorAproximadoTributos);
+            }
+
+            if (ViewModel.ExibirPisConfins)
+            {
+                l.ComCampoNumerico("VALOR DO COFINS", m.ValorCofins);
+            }
+
+            l.ComCampoNumerico("Valor Total da Nota", m.ValorTotalNota)
+            .ComLargurasIguais();
         }
+
+        public override PosicaoBloco Posicao => PosicaoBloco.Topo;
+        public override string Cabecalho => "Cálculo do Imposto";
     }
 }

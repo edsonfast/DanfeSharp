@@ -648,6 +648,7 @@ namespace DanfeSharp.Schemas.NFe
         /// </summary>
         public FormaEmissao tpEmis;
 
+
         public TAmb tpAmb;
 
     }

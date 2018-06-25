@@ -12,7 +12,16 @@ namespace DanfeSharp
     /// </summary>
     public static class Formatador
     {
-        public static readonly CultureInfo Culture = new CultureInfo("pt-BR");
+        /// <summary>
+        /// Cultura pt-BR
+        /// </summary>
+        public static readonly CultureInfo Cultura = new CultureInfo(1046);
+
+        static Formatador()
+        {
+            Cultura.NumberFormat.CurrencyPositivePattern = 2;
+            Cultura.NumberFormat.CurrencyNegativePattern = 9;
+        }
 
         public const String FormatoNumeroNF = @"000\.000\.000";
 
@@ -176,19 +185,19 @@ namespace DanfeSharp
             return InternalRegexReplace(telefone, Telefone, "($1) $2-$3");
         }
 
-        public static String FormatarChaveAcesso(String cnpj)
+        public static String FormatarChaveAcesso(String chaveAcesso)
         {
-            return Regex.Replace(cnpj, ".{4}", "$0 ").TrimEnd();
+            return Regex.Replace(chaveAcesso, ".{4}", "$0 ").TrimEnd();
         }
 
         public static String Formatar(this Double number, String formato = FormatoMoeda)
         {
-            return number.ToString(formato, Culture);
+            return number.ToString(formato, Cultura);
         }
 
         public static String Formatar(this int number, String formato = FormatoMoeda)
         {
-            return number.ToString(formato, Culture);
+            return number.ToString(formato, Cultura);
         }
 
         public static String Formatar(this int? number, String formato = FormatoMoeda)
@@ -199,6 +208,11 @@ namespace DanfeSharp
         public static String Formatar(this Double? number, String formato = FormatoMoeda)
         {
             return number.HasValue ? number.Value.Formatar(formato) : String.Empty;
+        }
+
+        public static String FormatarMoeda(this Double? number)
+        {
+            return number.HasValue ? number.Value.ToString("C", Cultura) : String.Empty;
         }
 
         public static String Formatar(this DateTime? dateTime)
