@@ -30,7 +30,7 @@ namespace DanfeSharp.Blocos {
             var l = (float)(LarguraCampoCodigoAntt + LarguraCampoPlacaVeiculo + LarguraCampoUf + LarguraCampoCnpj) / 3F;
 
             AdicionarLinhaCampos()
-                .ComCampoNumerico(Strings.Quantidade, transportadora.QuantidadeVolumes, 3)
+                .ComCampoNumerico(Strings.Quantidade, transportadora.QuantidadeVolumes, 0)
                 .ComCampo("Espécie", transportadora.Especie)
                 .ComCampo("Marca", transportadora.Marca)
                 .ComCampo("Numeração", transportadora.Numeracao)
