@@ -91,11 +91,19 @@ namespace DanfeSharp
             Gfx.Flush();
         }
 
-        public void DesenharAvisoHomologacao()
+        public void DesenharAvisoSemValorFiscal(int TipoAmbiente, string ProtocoloAutorizacao)
         {
+
             TextStack ts = new TextStack(RetanguloCorpo) { AlinhamentoVertical = AlinhamentoVertical.Centro, AlinhamentoHorizontal = AlinhamentoHorizontal.Centro, LineHeightScale = 0.9F }
-                        .AddLine("SEM VALOR FISCAL", Danfe.EstiloPadrao.CriarFonteRegular(48))
-                        .AddLine("AMBIENTE DE HOMOLOGAÇÃO", Danfe.EstiloPadrao.CriarFonteRegular(30));
+                        .AddLine("SEM VALOR FISCAL", Danfe.EstiloPadrao.CriarFonteRegular(48));
+
+            if (TipoAmbiente == 2) {
+                ts.AddLine("AMBIENTE DE HOMOLOGAÇÃO", Danfe.EstiloPadrao.CriarFonteRegular(30));
+            }
+
+            if (string.IsNullOrEmpty(ProtocoloAutorizacao)) {
+                ts.AddLine("RASCUNHO DE NF", Danfe.EstiloPadrao.CriarFonteRegular(30));
+            }
 
             Gfx.PrimitiveComposer.BeginLocalState();
             Gfx.PrimitiveComposer.SetFillColor(new org.pdfclown.documents.contents.colorSpaces.DeviceRGBColor(0.35, 0.35, 0.35));
