@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DanfeSharp</RootNamespace>
     <AssemblyName>DanfeSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -55,6 +55,9 @@
     <Compile Include="Blocos\BlocoDuplicataFatura.cs" />
     <Compile Include="Blocos\BlocoIdentificacaoEmitente.cs" />
     <Compile Include="Blocos\BlocoCalculoIssqn.cs" />
+    <Compile Include="Blocos\BlocoLocalEntregaRetirada\BlocoLocalEntrega.cs" />
+    <Compile Include="Blocos\BlocoLocalEntregaRetirada\BlocoLocalEntregaRetirada.cs" />
+    <Compile Include="Blocos\BlocoLocalEntregaRetirada\BlocoLocalRetirada.cs" />
     <Compile Include="Blocos\TabelaProdutosServicos.cs" />
     <Compile Include="Blocos\BlocoTransportador.cs" />
     <Compile Include="Constantes.cs" />
@@ -96,6 +99,7 @@
     <Compile Include="Modelo\DanfeViewModelCreator.cs" />
     <Compile Include="Modelo\EmpresaViewModel.cs" />
     <Compile Include="Modelo\DuplicataViewModel.cs" />
+    <Compile Include="Modelo\LocalEntregaRetiradaViewModel.cs" />
     <Compile Include="Modelo\ProdutoViewModel.cs" />
     <Compile Include="Modelo\TransportadoraViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -198,6 +198,15 @@ namespace DanfeSharp.Modelo {
             model.Emitente = CreateEmpresaFrom(infNfe.emit);
             model.Destinatario = CreateEmpresaFrom(infNfe.dest);
 
+            // Local retirada e entrega 
+            if (infNfe.retirada != null) {
+                model.LocalRetirada = CreateLocalRetiradaEntrega(infNfe.retirada);
+            }
+
+            if (infNfe.entrega != null) {
+                model.LocalEntrega = CreateLocalRetiradaEntrega(infNfe.entrega);
+            }
+
             model.NotasFiscaisReferenciadas = ide.NFref.Select(x => x.ToString()).ToList();
 
             // Informações adicionais de compra
@@ -365,6 +374,34 @@ namespace DanfeSharp.Modelo {
             CarregarModelFromNFe(model, nfe);
 
             return model;
+        }
+
+        private static LocalEntregaRetiradaViewModel CreateLocalRetiradaEntrega(LocalEntregaRetirada local) {
+            var m = new LocalEntregaRetiradaViewModel() {
+                NomeRazaoSocial = local.xNome,
+                CnpjCpf = !String.IsNullOrWhiteSpace(local.CNPJ) ? local.CNPJ : local.CPF,
+                InscricaoEstadual = local.IE,
+                Bairro = local.xBairro,
+                Municipio = local.xMun,
+                Uf = local.UF,
+                Cep = local.CEP,
+                Telefone = local.fone
+            };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(local.xLgr);
+
+            if (!String.IsNullOrWhiteSpace(local.nro)) {
+                sb.Append(", ").Append(local.nro);
+            }
+
+            if (!String.IsNullOrWhiteSpace(local.xCpl)) {
+                sb.Append(" - ").Append(local.xCpl);
+            }
+
+            m.Endereco = sb.ToString();
+
+            return m;
         }
 
     }
