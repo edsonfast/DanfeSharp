@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,8 @@ using DanfeSharp.Esquemas.NFe;
 
 namespace DanfeSharp.Modelo {
     public static class DanfeViewModelCreator {
+        public readonly static IEnumerable<FormaEmissao> FormasEmissaoSuportadas = new FormaEmissao[] { FormaEmissao.Normal, FormaEmissao.ContingenciaSVCAN, FormaEmissao.ContingenciaSVCRS };
+
         private static EmpresaViewModel CreateEmpresaFrom(Empresa empresa) {
             EmpresaViewModel model = new EmpresaViewModel();
 
@@ -15,6 +18,7 @@ namespace DanfeSharp.Modelo {
             model.CnpjCpf = !String.IsNullOrWhiteSpace(empresa.CNPJ) ? empresa.CNPJ : empresa.CPF;
             model.Ie = empresa.IE;
             model.IeSt = empresa.IEST;
+            model.Email = empresa.email;
 
             var end = empresa.Endereco;
 
@@ -26,7 +30,7 @@ namespace DanfeSharp.Modelo {
                 model.EnderecoUf = end.UF;
                 model.EnderecoCep = end.CEP;
                 model.Telefone = end.fone;
-                model.Email = empresa.email;
+                model.EnderecoComplemento = end.xCpl;
             }
 
             if (empresa is Emitente) {
@@ -152,11 +156,11 @@ namespace DanfeSharp.Modelo {
             var ide = infNfe.ide;
 
             if (infNfe.Versao.Maior >= 3) {
-                if (ide.dhEmi.HasValue) model.DataHoraEmissao = ide.dhEmi.Value.DateTimeOffsetValue.DateTime;
-                if (ide.dhSaiEnt.HasValue) model.DataSaidaEntrada = ide.dhSaiEnt.Value.DateTimeOffsetValue.DateTime;
+                if (ide.dhEmi.HasValue) model.DataHoraEmissao = ide.dhEmi?.DateTimeOffsetValue.DateTime;
+                if (ide.dhSaiEnt.HasValue) model.DataSaidaEntrada = ide.dhSaiEnt?.DateTimeOffsetValue.DateTime;
 
                 if (model.DataSaidaEntrada.HasValue) {
-                    model.HoraSaidaEntrada = model.DataSaidaEntrada.Value.TimeOfDay;
+                    model.HoraSaidaEntrada = model.DataSaidaEntrada?.TimeOfDay;
                 }
             } else {
                 model.DataHoraEmissao = ide.dEmi;
@@ -172,13 +176,14 @@ namespace DanfeSharp.Modelo {
 
             var infNfe = nfe.infNFe;
             var ide = infNfe.ide;
+            model.TipoEmissao = ide.tpEmis;
 
             if (ide.mod != 55) {
-                throw new Exception("Somente o mod==55 está implementado.");
+                throw new NotSupportedException("Somente o mod==55 está implementado.");
             }
 
-            if (ide.tpEmis != FormaEmissao.Normal) {
-                throw new Exception("Somente o tpEmis==1 está implementado.");
+            if (!FormasEmissaoSuportadas.Contains(model.TipoEmissao)) {
+                throw new NotSupportedException($"O tpEmis {ide.tpEmis} não é suportado.");
             }
 
             model.Orientacao = ide.tpImp == 1 ? Orientacao.Retrato : Orientacao.Paisagem;
@@ -307,6 +312,12 @@ namespace DanfeSharp.Modelo {
             }
 
             ExtrairDatas(model, infNfe);
+
+            // Contingência SVC-AN e SVC-RS
+            if (model.TipoEmissao == FormaEmissao.ContingenciaSVCAN || model.TipoEmissao == FormaEmissao.ContingenciaSVCRS) {
+                model.ContingenciaDataHora = ide.dhCont?.DateTimeOffsetValue.DateTime;
+                model.ContingenciaJustificativa = ide.xJust;
+            }
         }
 
         internal static CalculoImpostoViewModel CriarCalculoImpostoViewModel(ICMSTotal i) {
@@ -346,7 +357,7 @@ namespace DanfeSharp.Modelo {
             model.ProtocoloAutorizacao = String.Format(Formatador.Cultura, "{0} - {1}", infoProto.nProt, infoProto.dhRecbto.DateTimeOffsetValue.DateTime);
 
             return model;
-        }       
+        }
 
         public static DanfeViewModel CreateFromXmlNFe(NFe nfe) {
             DanfeViewModel model = new DanfeViewModel();
