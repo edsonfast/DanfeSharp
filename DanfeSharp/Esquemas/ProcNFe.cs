@@ -79,6 +79,7 @@ namespace DanfeSharp.Esquemas.NFe
 
     [Serializable]
     [XmlType(Namespace = Namespaces.NFe)]
+    [XmlRoot("NFe", Namespace = Namespaces.NFe, IsNullable = false)]
     public class NFe
     {
         public InfNFe infNFe { get; set; }

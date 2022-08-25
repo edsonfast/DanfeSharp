@@ -41,5 +41,8 @@ namespace DanfeSharp.Test {
 
         [TestMethod]
         public void v4_ComLocalRetirada() => TestXml("v4.00/v4_ComLocalRetirada.xml");
+
+        [TestMethod]
+        public void v4_SemValorFiscal() => TestXml("v4.00/v4_SemValorFiscal.xml");
     }
 }
