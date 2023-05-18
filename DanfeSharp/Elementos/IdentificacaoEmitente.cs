@@ -71,8 +71,9 @@ namespace DanfeSharp
                 .AddLine(nome, f2)
                 .AddLine(emitente.EnderecoLinha1.Trim(), f3)
                 .AddLine(emitente.EnderecoLinha2.Trim(), f3)
-                .AddLine(emitente.EnderecoLinha3.Trim(), f3);
-             
+                .AddLine(emitente.EnderecoLinha3.Trim(), f3)
+                .AddLine(emitente.EnderecoLinha4.Trim(), f3);
+
             ts.AlinhamentoHorizontal = AlinhamentoHorizontal.Centro;
             ts.AlinhamentoVertical = AlinhamentoVertical.Centro;
             ts.Draw(gfx);

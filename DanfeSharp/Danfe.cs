@@ -169,6 +169,11 @@ namespace DanfeSharp
                 p.DesenharAvisoSemValorFiscal(ViewModel.TipoAmbiente, ViewModel.ProtocoloAutorizacao);
             }
 
+            // NF-e cancelada
+            if (ViewModel.CodigoStatusReposta == 101) {
+                p.DesenharAvisoCancelamento();
+            }
+
             return p;
         }
 

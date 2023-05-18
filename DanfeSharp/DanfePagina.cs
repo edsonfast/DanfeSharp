@@ -111,6 +111,20 @@ namespace DanfeSharp
             Gfx.PrimitiveComposer.End();
         }
 
+        public void DesenharAvisoCancelamento() {
+            TextStack ts = new TextStack(RetanguloCorpo) {
+                AlinhamentoVertical = AlinhamentoVertical.Centro,
+                AlinhamentoHorizontal = AlinhamentoHorizontal.Centro,
+                LineHeightScale = 0.9F
+            }
+            .AddLine("DOCUMENTO CANCELADO", Danfe.EstiloPadrao.CriarFonteRegular(48));
+
+            Gfx.PrimitiveComposer.BeginLocalState();
+            Gfx.PrimitiveComposer.SetFillColor(new org.pdfclown.documents.contents.colorSpaces.DeviceRGBColor(0.35, 0.35, 0.35));
+            ts.Draw(Gfx);
+            Gfx.PrimitiveComposer.End();
+        }
+
         public void DesenharBlocos(bool isPrimeirapagina = false)
         {
             if (isPrimeirapagina && Danfe.ViewModel.QuantidadeCanhotos > 0) DesenharCanhoto();

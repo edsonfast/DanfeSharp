@@ -116,7 +116,7 @@ namespace DanfeSharp.Modelo
         }
 
         /// <summary>
-        /// Linha 1 do Endereço
+        /// Linha 2 do Endereço
         /// </summary>
         public String EnderecoLinha2 => $"{EnderecoBairro} - CEP: {Formatador.FormatarCEP(EnderecoCep)}";
 
@@ -137,6 +137,11 @@ namespace DanfeSharp.Modelo
                 return sb.ToString();               
             }
         }
-        
+
+        /// <summary>
+        /// Linha 4 do E-Mail
+        /// </summary>
+        public String EnderecoLinha4 => $"{Email}";
+
     }
 }
