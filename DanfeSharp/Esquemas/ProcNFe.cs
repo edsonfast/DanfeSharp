@@ -75,7 +75,7 @@ namespace DanfeSharp.Esquemas.NFe
     }
 
     [Serializable]
-    //[XmlRoot(Namespace = Namespaces.NFe, IsNullable = false)]
+    [XmlRoot(Namespace = Namespaces.NFe, IsNullable = false)]
     //public partial class NFe
     [XmlType(Namespace = Namespaces.NFe)]
     public class NFe
@@ -764,7 +764,7 @@ namespace DanfeSharp.Esquemas.NFe
 
         /// <summary>
         ///     YA01 - Grupo de Formas de Pagamento
-        ///     <para>Ocorrência: 0-100</para>
+        ///     Ocorrência: 0-100
         /// </summary>
         [XmlElement("pag")]
         public List<pag> pag { get; set; }
@@ -939,23 +939,26 @@ namespace DanfeSharp.Esquemas.NFe
 
     /// <summary>
     ///     Meio de pagamento
-    ///     <para>01 - Dinheiro</para>
-    ///     <para>02 - Cheque</para>
-    ///     <para>03 - Cartão de Crédito</para>
-    ///     <para>04 - Cartão de Débito</para>
-    ///     <para>05 - Crédito Loja</para>
-    ///     <para>10 - Vale Alimentação</para>
-    ///     <para>11 - Vale Refeição</para>
-    ///     <para>12 - Vale Presente</para>
-    ///     <para>13 - Vale Combustível</para>
-    ///     <para>14 - Duplicata Mercantil (versão 4.00)</para>
-    ///     <para>15 - Boleto Bancário (versão 4.00)</para>
-    ///     <para>16 - Depósito Bancário (versão 4.00)</para>
-    ///     <para>17 - Pagamento Instantâneo (PIX) (versão 4.00)</para>
-    ///     <para>18 - Transferência bancária, Carteira Digital (versão 4.00)</para>
-    ///     <para>19 - Programa de fidelidade, Cashback, Crédito Virtual (versão 4.00)</para>
-    ///     <para>90 - Sem pagamento (versão 4.00)</para>
-    ///     <para>99 - Outros</para>
+    ///     01 - Dinheiro
+    ///     02 - Cheque
+    ///     03 - Cartão de Crédito
+    ///     04 - Cartão de Débito
+    ///     05 - Cartão da Loja (Private Label), Crediário Digital, Outros Crediários 
+    ///     10 - Vale Alimentação
+    ///     11 - Vale Refeição
+    ///     12 - Vale Presente
+    ///     13 - Vale Combustível
+    ///     14 - Duplicata Mercantil (versão 4.00)
+    ///     15 - Boleto Bancário (versão 4.00)
+    ///     16 - Depósito Bancário (versão 4.00)
+    ///     17 - Pagamento Instantâneo (PIX) - Dinâmico
+    ///     18 - Transferência bancária, Carteira Digital
+    ///     19 - Programa de fidelidade, Cashback, Crédito Virtual
+    ///     20 - Pagamento Instantâneo (PIX) - Estático
+    ///     21 - Crédito em Loja
+    ///     22 - Pagamento Eletrônico não Informado - falha de hardware do sistema emissor
+    ///     90 - Sem pagamento (versão 4.00)
+    ///     99 - Outros
     /// </summary>
     public enum FormaPagamento
     {
@@ -988,11 +991,11 @@ namespace DanfeSharp.Esquemas.NFe
         fpCartaoDebito = 04,
 
         /// <summary>
-        /// 05 - Crédito Loja
+        /// 05 - Cartão da Loja (Private Label), Crediário Digital, Outros Crediários
         /// </summary>
-        [Description("Crédito Loja")]
+        [Description("Cartão da Loja (Private Label), Crediário Digital, Outros Crediários")]
         [XmlEnum("05")]
-        fpCreditoLoja = 05,
+        fpCreditoLojaCrediario = 05,
 
         /// <summary>
         /// 10 - Vale Alimentação
@@ -1024,8 +1027,8 @@ namespace DanfeSharp.Esquemas.NFe
 
         /// <summary>
         /// 14 - Duplicata Mercantil      
-        /// <para>Na NT2016.002 (v1.50), foi excluída esta forma de pagamento na emissão de NFC-e (modelo 65), 
-        /// porém para NFe (modelo 55) a SEFAZ, até o momento, ainda permite o seu uso.</para>
+        /// Na NT2016.002 (v1.50), foi excluída esta forma de pagamento na emissão de NFC-e (modelo 65), 
+        /// porém para NFe (modelo 55) a SEFAZ, até o momento, ainda permite o seu uso.
         /// <see langword="https://github.com/ZeusAutomacao/DFe.NET/issues/790"></see>
         /// </summary>
         [Description("Duplicata Mercantil")]
@@ -1045,9 +1048,9 @@ namespace DanfeSharp.Esquemas.NFe
         [XmlEnum("16")] fpDepositoBancario = 16,
 
         /// <summary>
-        /// 17 - Pagamento Instantâneo (PIX)
+        /// 17 - Pagamento Instantâneo (PIX) - Dinâmico
         /// </summary>
-        [Description("Pagamento Instantâneo (PIX)")]
+        [Description("Pagamento Instantâneo (PIX) - Dinâmico")]
         [XmlEnum("17")] fpPagamentoInstantaneoPIX = 17,
 
         /// <summary>
@@ -1062,6 +1065,23 @@ namespace DanfeSharp.Esquemas.NFe
         [Description("Programa de fidelidade, Cashback, Crédito Virtual")]
         [XmlEnum("19")] fpProgramadefidelidade = 19,
 
+        /// <summary>
+        /// 20 - Pagamento Instantâneo (PIX) - Estático
+        /// </summary>
+        [Description("Pagamento Instantâneo (PIX) - Estático")]
+        [XmlEnum("20")] fpPagamentoInstantaneoPIXEstatico = 20,
+
+        /// <summary>
+        /// 21 - Crédito em Loja
+        /// </summary>
+        [Description("Crédito em Loja")]
+        [XmlEnum("21")] fpCreditoLoja = 21,
+
+        /// <summary>
+        /// 22 - Pagamento Eletrônico não Informado - falha de hardware do sistema emissor
+        /// </summary>
+        [Description("Pagamento Eletrônico não Informado - falha de hardware do sistema emissor")]
+        [XmlEnum("22")] fpPgtoEletronicoNaoInformado = 22,
 
         /// <summary>
         /// 90 - Sem pagamento
@@ -1080,34 +1100,34 @@ namespace DanfeSharp.Esquemas.NFe
 
     /// <summary>
     ///     Bandeira da operadora de cartão de crédito e/ou débito
-    ///     <para>01 - Visa</para>
-    ///     <para>02 - Mastercard</para>
-    ///     <para>03 - American Express</para>
-    ///     <para>04 - Sorocred</para>
-    ///     <para>05 - Diners Club (versão 4.00)</para>
-    ///     <para>06 - Elo (versão 4.00)</para>
-    ///     <para>07 - Hipercard (versão 4.00)</para>
-    ///     <para>08 - Aura (versão 4.00)</para>
-    ///     <para>09 - Cabal (versão 4.00)</para>
-    ///     <para>10 - Alelo</para>
-    ///     <para>11 - Banes Card</para>
-    ///     <para>12 - CalCard</para>
-    ///     <para>13 - Credz</para>
-    ///     <para>14 - Discover</para>
-    ///     <para>15 - GoodCard</para>
-    ///     <para>16 - GreenCard</para>
-    ///     <para>17 - Hiper</para>
-    ///     <para>18 - JCB</para>
-    ///     <para>19 - Mais</para>
-    ///     <para>20 - MaxVan</para>
-    ///     <para>21 - Policard</para>
-    ///     <para>22 - RedeCompras</para>
-    ///     <para>23 - Sodexo</para>
-    ///     <para>24 - ValeCard</para>
-    ///     <para>25 - Verocheque</para>
-    ///     <para>26 - VR</para>
-    ///     <para>27 - Ticket</para>
-    ///     <para>99 - Outros</para>
+    ///     01 - Visa
+    ///     02 - Mastercard
+    ///     03 - American Express
+    ///     04 - Sorocred
+    ///     05 - Diners Club (versão 4.00)
+    ///     06 - Elo (versão 4.00)
+    ///     07 - Hipercard (versão 4.00)
+    ///     08 - Aura (versão 4.00)
+    ///     09 - Cabal (versão 4.00)
+    ///     10 - Alelo
+    ///     11 - Banes Card
+    ///     12 - CalCard
+    ///     13 - Credz
+    ///     14 - Discover
+    ///     15 - GoodCard
+    ///     16 - GreenCard
+    ///     17 - Hiper
+    ///     18 - JCB
+    ///     19 - Mais
+    ///     20 - MaxVan
+    ///     21 - Policard
+    ///     22 - RedeCompras
+    ///     23 - Sodexo
+    ///     24 - ValeCard
+    ///     25 - Verocheque
+    ///     26 - VR
+    ///     27 - Ticket
+    ///     99 - Outros
     /// </summary>
     public enum BandeiraCartao
     {
@@ -1169,8 +1189,8 @@ namespace DanfeSharp.Esquemas.NFe
     }
 
     /// <summary>
-    ///     <para>1=Pagamento integrado com o sistema de automação da empresa(Ex.: equipamento TEF, Comércio Eletrônico);</para>
-    ///     <para>Pagamento não integrado com o sistema de automação da empresa(Ex.: equipamento POS);</para>
+    ///     1=Pagamento integrado com o sistema de automação da empresa(Ex.: equipamento TEF, Comércio Eletrônico);
+    ///     Pagamento não integrado com o sistema de automação da empresa(Ex.: equipamento POS);
     /// </summary>
     public enum TipoIntegracaoPagamento
     {

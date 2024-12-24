@@ -165,13 +165,8 @@ namespace DanfeSharp
             // 7. O DANFE emitido para representar NF-e cujo uso foi autorizado em ambiente de
             // homologação sempre deverá conter a frase “SEM VALOR FISCAL” no quadro “Informações
             // Complementares” ou em marca d’água destacada.
-            if (ViewModel.TipoAmbiente == 2 || string.IsNullOrEmpty(ViewModel.ProtocoloAutorizacao)) {
-                p.DesenharAvisoSemValorFiscal(ViewModel.TipoAmbiente, ViewModel.ProtocoloAutorizacao);
-            }
-
-            // NF-e cancelada
-            if (ViewModel.CodigoStatusReposta == 101) {
-                p.DesenharAvisoCancelamento();
+            if (ViewModel.TipoAmbiente == 2 || string.IsNullOrEmpty(ViewModel.ProtocoloAutorizacao) || ViewModel.CodigoStatusReposta == 101) {
+                p.DesenharAviso(ViewModel.TipoAmbiente, ViewModel.ProtocoloAutorizacao, ViewModel.CodigoStatusReposta);
             }
 
             return p;

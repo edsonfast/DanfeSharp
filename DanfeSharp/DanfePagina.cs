@@ -91,33 +91,32 @@ namespace DanfeSharp
             Gfx.Flush();
         }
 
-        public void DesenharAvisoSemValorFiscal(int TipoAmbiente, string ProtocoloAutorizacao)
+		/// <summary>
+        /// SEM VALOR FISCAL, AMBIENTE DE HOMOLOGAÇÃO, RASCUNHO NF, DOCUMENTO CANCELADO
+        /// </summary>
+        /// <param name="TipoAmbiente"></param>
+        /// <param name="ProtocoloAutorizacao"></param>
+        /// <param name="CodigoStatusReposta"></param>
+        public void DesenharAviso(int TipoAmbiente, string ProtocoloAutorizacao, int? CodigoStatusReposta)
         {
 
-            TextStack ts = new TextStack(RetanguloCorpo) { AlinhamentoVertical = AlinhamentoVertical.Centro, AlinhamentoHorizontal = AlinhamentoHorizontal.Centro, LineHeightScale = 0.9F }
-                        .AddLine("SEM VALOR FISCAL", Danfe.EstiloPadrao.CriarFonteRegular(48));
+            TextStack ts = new TextStack(RetanguloCorpo) { AlinhamentoVertical = AlinhamentoVertical.Centro, AlinhamentoHorizontal = AlinhamentoHorizontal.Centro, LineHeightScale = 0.9F };
 
-            if (TipoAmbiente == 2) {
-                ts.AddLine("AMBIENTE DE HOMOLOGAÇÃO", Danfe.EstiloPadrao.CriarFonteRegular(30));
+            if (TipoAmbiente == 2 || string.IsNullOrEmpty(ProtocoloAutorizacao)) {
+                ts.AddLine("SEM VALOR FISCAL", Danfe.EstiloPadrao.CriarFonteRegular(48));
+
+                if (TipoAmbiente == 2) {
+                    ts.AddLine("AMBIENTE DE HOMOLOGAÇÃO", Danfe.EstiloPadrao.CriarFonteRegular(30));
+                }
+
+                if (string.IsNullOrEmpty(ProtocoloAutorizacao)) {
+                    ts.AddLine("RASCUNHO DE NF", Danfe.EstiloPadrao.CriarFonteRegular(30));
+                }
             }
 
-            if (string.IsNullOrEmpty(ProtocoloAutorizacao)) {
-                ts.AddLine("RASCUNHO DE NF", Danfe.EstiloPadrao.CriarFonteRegular(30));
+            if (CodigoStatusReposta == 101) {
+                ts.AddLine("DOCUMENTO CANCELADO", Danfe.EstiloPadrao.CriarFonteRegular(48));
             }
-
-            Gfx.PrimitiveComposer.BeginLocalState();
-            Gfx.PrimitiveComposer.SetFillColor(new org.pdfclown.documents.contents.colorSpaces.DeviceRGBColor(0.35, 0.35, 0.35));
-            ts.Draw(Gfx);
-            Gfx.PrimitiveComposer.End();
-        }
-
-        public void DesenharAvisoCancelamento() {
-            TextStack ts = new TextStack(RetanguloCorpo) {
-                AlinhamentoVertical = AlinhamentoVertical.Centro,
-                AlinhamentoHorizontal = AlinhamentoHorizontal.Centro,
-                LineHeightScale = 0.9F
-            }
-            .AddLine("DOCUMENTO CANCELADO", Danfe.EstiloPadrao.CriarFonteRegular(48));
 
             Gfx.PrimitiveComposer.BeginLocalState();
             Gfx.PrimitiveComposer.SetFillColor(new org.pdfclown.documents.contents.colorSpaces.DeviceRGBColor(0.35, 0.35, 0.35));
